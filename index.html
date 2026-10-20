@@ -14,9 +14,23 @@
     }
     body {
         overflow: hidden;
-        background: radial-gradient(ellipse at center, #26324a 0%, #11151c 70%, #0b0d12 100%);
+        background-color: #11151c;
+        background-image: url("background.jpg");
+        background-position: center center;
+        background-repeat: no-repeat;
+        -webkit-background-size: cover;
+        background-size: cover;
         color: #e8e8e8;
         font-family: Tahoma, Verdana, sans-serif;
+    }
+    /* Darkens the photo so the text stays readable. */
+    .shade {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: rgba(10, 13, 20, 0.55);
     }
     .wrap {
         position: absolute;
@@ -24,6 +38,7 @@
         left: 50%;
         width: 720px;
         max-width: 90%;
+        -webkit-transform: translate(-50%, -50%); /* older GMod browser */
         transform: translate(-50%, -50%);
     }
     .banner {
@@ -52,13 +67,17 @@
         padding: 14px 18px;
         background: rgba(35, 42, 53, 0.92);
     }
+    /* Label left, value right; floats so older GMod browsers lay it out too. */
     .row {
-        display: flex;
-        justify-content: space-between;
+        overflow: hidden;
         font-size: 15px;
     }
     .row span:first-child {
+        float: left;
         color: #8a93a3;
+    }
+    .row span:last-child {
+        float: right;
     }
     .status {
         margin-top: 12px;
@@ -102,6 +121,7 @@
 </style>
 </head>
 <body>
+    <div class="shade"></div>
     <div class="wrap">
         <div class="banner">
             <h1>B2B | RP#4</h1>
