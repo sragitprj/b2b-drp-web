@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>B2B | RP#4 - Loading</title>
+<!--
+    Loading screen. GMod shows the page at the server's sv_loadingurl while
+    players connect, and calls the functions at the bottom with live details.
+-->
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+    body {
+        overflow: hidden;
+        background: radial-gradient(ellipse at center, #26324a 0%, #11151c 70%, #0b0d12 100%);
+        color: #e8e8e8;
+        font-family: Tahoma, Verdana, sans-serif;
+    }
+    .wrap {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 720px;
+        max-width: 90%;
+        transform: translate(-50%, -50%);
+    }
+    .banner {
+        border-radius: 8px;
+        padding: 18px 24px;
+        background: linear-gradient(to bottom, #4a90e8 0%, #2a6ed4 50%, #1f5ab5 100%);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+    }
+    .banner h1 {
+        margin: 0;
+        font-family: "Trebuchet MS", Tahoma, sans-serif;
+        font-size: 44px;
+        color: #fff;
+        text-shadow: 2px 2px 3px #000;
+    }
+    .banner p {
+        margin: 4px 0 0;
+        font-size: 16px;
+        color: #dce9ff;
+        text-shadow: 1px 1px 1px #000;
+    }
+    .panel {
+        margin-top: 14px;
+        border: 1px solid #2f3a4a;
+        border-radius: 8px;
+        padding: 14px 18px;
+        background: rgba(35, 42, 53, 0.92);
+    }
+    .row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 15px;
+    }
+    .row span:first-child {
+        color: #8a93a3;
+    }
+    .status {
+        margin-top: 12px;
+        min-height: 18px;
+        font-size: 14px;
+        color: #cfd6e2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .bar {
+        margin-top: 6px;
+        height: 18px;
+        border-radius: 4px;
+        background: #0e1218;
+        overflow: hidden;
+    }
+    .fill {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(to bottom, #6cd96c 0%, #3cb83c 50%, #2e9a2e 100%);
+        transition: width 0.4s ease;
+    }
+    .tagline {
+        margin-top: 14px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        color: #5cd65c;
+        text-shadow: 1px 1px 1px #000;
+    }
+    .tip {
+        margin-top: 8px;
+        min-height: 40px;
+        text-align: center;
+        font-size: 15px;
+        color: #c9a8ff;
+        text-shadow: 1px 1px 1px #000;
+        transition: opacity 0.5s ease;
+    }
+</style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="banner">
+            <h1>B2B | RP#4</h1>
+            <p>SemiSerious [PHX/WIRE] Custom Shipments/Jobs</p>
+        </div>
+
+        <div class="panel">
+            <div class="row"><span>Map</span><span id="map">-</span></div>
+            <div class="row"><span>Gamemode</span><span id="gamemode">DarkRP</span></div>
+            <div class="status" id="status">Connecting...</div>
+            <div class="bar"><div class="fill" id="fill"></div></div>
+        </div>
+
+        <div class="tagline">Please read and abide by the rules.</div>
+        <div class="tip" id="tip"></div>
+    </div>
+
+<script>
+    var tips = [
+        "Play 12 hours to become a Supporter: extra jobs, no job votes and more. Check F4 > Supporter.",
+        "If you get arrested, don't worry - you will be auto unarrested in a few minutes.",
+        "Press F4 for the Options menu: jobs, shop, HUD and supporter.",
+        "No random deathmatch. You need an RP reason to kill.",
+        "Start a chat message with @ to reach the admins.",
+        "Wire and E2 are allowed, but not for printer money extraction or exploits.",
+        "The first join downloads the map, so it can take a minute. Hang in there!"
+    ];
+
+    var tipIndex = Math.floor(Math.random() * tips.length);
+    var tipEl = document.getElementById("tip");
+
+    function nextTip() {
+        tipEl.style.opacity = 0;
+        setTimeout(function () {
+            tipIndex = (tipIndex + 1) % tips.length;
+            tipEl.textContent = tips[tipIndex];
+            tipEl.style.opacity = 1;
+        }, 500);
+    }
+    tipEl.textContent = tips[tipIndex];
+    setInterval(nextTip, 7000);
+
+    var filesTotal = 0;
+    var filesNeeded = 0;
+
+    function setText(id, text) {
+        document.getElementById(id).textContent = text;
+    }
+
+    function updateBar() {
+        if (filesTotal <= 0) return;
+        var done = Math.max(filesTotal - filesNeeded, 0);
+        document.getElementById("fill").style.width = Math.min(100, (done / filesTotal) * 100) + "%";
+    }
+
+    // Called by GMod.
+    function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
+        setText("map", mapname || "-");
+        if (gamemode) setText("gamemode", gamemode);
+    }
+
+    function SetFilesTotal(total) {
+        filesTotal = total;
+        updateBar();
+    }
+
+    function SetFilesNeeded(needed) {
+        filesNeeded = needed;
+        updateBar();
+    }
+
+    function DownloadingFile(fileName) {
+        setText("status", "Downloading " + fileName);
+    }
+
+    function SetStatusChanged(status) {
+        setText("status", status);
+        if (/sending client info|starting lua/i.test(status)) {
+            document.getElementById("fill").style.width = "100%";
+        }
+    }
+</script>
+</body>
+</html>
